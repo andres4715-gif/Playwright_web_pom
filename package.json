@@ -1,0 +1,32 @@
+{
+    "name": "playwright-ts-framework",
+    "version": "1.0.0",
+    "description": "Playwright Framework and TypeScript",
+    "main": "index.js",
+    "scripts": {
+        "watch:ts": "tsc --watch",
+        "test": "playwright test",
+        "test:ui": "playwright test --grep @ui",
+        "test:api": "playwright test --grep @api",
+        "test:headed:ui": "playwright test --headed --project=chromium --grep @ui",
+        "test:chrome": "playwright test --project=chromium --headed --grep @ui",
+        "test:firefox": "playwright test --project=firefox --headed --grep @ui",
+        "test:webkit": "playwright test --project=webkit --headed --grep @ui",
+        "report": "playwright show-report",
+        "codegen": "playwright codegen https://www.advantageonlineshopping.com/#/"
+    },
+    "keywords": [
+        "playwright",
+        "typescript",
+        "testing",
+        "e2e",
+        "api"
+    ],
+    "author": "Andres Rios",
+    "license": "ISC",
+    "devDependencies": {
+        "@playwright/test": "^1.44.0",
+        "@types/node": "^20.12.12",
+        "typescript": "^5.4.5"
+    }
+}
