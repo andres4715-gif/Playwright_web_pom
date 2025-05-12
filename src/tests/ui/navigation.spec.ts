@@ -1,6 +1,6 @@
 import { test, expect } from '../../fixtures/pageFixtures';
 
-test.describe.only('Category Navigation @ui', () => {
+test.describe('Category Navigation @ui', () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.goto('/');
     await homePage.waitForPageLoad('networkidle'); // wait for correct page loading
@@ -14,9 +14,9 @@ test.describe.only('Category Navigation @ui', () => {
     await expect(page.locator('h3.categoryTitle')).toHaveText('SPEAKERS');
   });
 
-  // test('should navigate to Laptops category', async ({ page, homePage }) => {
-  //   await homePage.navigateToCategory('laptops');
-  //   await expect(page).toHaveURL(/.*\/category\/Laptops\/.*/);
-  //   await expect(page.locator('h3.categoryTitle')).toHaveText('LAPTOPS');
-  // });
+  test('should navigate to Laptops category', async ({ page, homePage }) => {
+    await homePage.navigateToCategory('laptops');
+    await expect(page).toHaveURL(/.*\/category\/Laptops\/.*/);
+    await expect(page.locator('h3.categoryTitle')).toHaveText('LAPTOPS');
+  });
 });
