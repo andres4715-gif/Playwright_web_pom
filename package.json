@@ -8,7 +8,7 @@
         "test": "playwright test",
         "test:ui": "playwright test --grep @ui",
         "test:api": "playwright test --grep @api",
-        "test:headed:ui": "playwright test --headed --project=chromium --grep @ui",
+        "test:headed:ui": "playwright test --headed --grep @ui",
         "test:chrome": "playwright test --project=chromium --headed --grep @ui",
         "test:firefox": "playwright test --project=firefox --headed --grep @ui",
         "test:webkit": "playwright test --project=webkit --headed --grep @ui",
