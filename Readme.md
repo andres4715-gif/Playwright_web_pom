@@ -49,3 +49,11 @@ $ npm run test:headed
 See the latest report: 
 $ npm run npm run report
 ```
+
+## Command line to run with Debugging. 
+```shell
+$ npx playwright test --project=chromium --grep @ui --headed --debug
+
+Example: 
+$ npx playwright test --project=chromium --grep 'SHIELD-649' --headed --debug
+```
