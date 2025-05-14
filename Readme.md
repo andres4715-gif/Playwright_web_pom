@@ -1,4 +1,5 @@
 # Playwright WEB automation Framework
+![Screenshot 2025-05-13 at 22 27 09](https://github.com/user-attachments/assets/2bf66f8b-18b3-459d-8edb-bc1325303d6b)
 
 
 ```
