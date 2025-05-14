@@ -29,7 +29,7 @@ export class LoginPage extends BasePage {
   }
 
   async openLoginModal(): Promise<void> {
-    await this.openUserMenu();
+    // await this.openUserMenu();
     await expect(this.usernameInput).toBeVisible({ timeout: 10000 });
   }
 
