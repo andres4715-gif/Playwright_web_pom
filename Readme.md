@@ -57,7 +57,7 @@ $ npm run npm run report
 $ npx playwright test --project=chromium --grep @ui --headed --debug
 
 Example: 
-$ npx playwright test --project=chromium --grep 'SHIELD-649' --headed --debug
+$ npx playwright test --project=chromium --grep 'should navigate to specific visual studio Company' --headed --debug
 ```
 
 # TO DO ✅
