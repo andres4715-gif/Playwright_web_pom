@@ -62,3 +62,4 @@ $ npx playwright test --project=chromium --grep 'SHIELD-649' --headed --debug
 # TO DO ✅
 - [ ] Create .env file and implement it
 - [ ] inherit from Base page in the other pages
+- [ ] Implement a logger

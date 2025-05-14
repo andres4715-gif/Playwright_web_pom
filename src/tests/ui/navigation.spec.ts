@@ -1,28 +1,34 @@
 import { test, expect } from '../../fixtures/pageFixtures';
 
-test.describe('Companies Navigation @ui', () => {
+test.describe.only('Companies Navigation @ui', () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.goto('/');
     await homePage.waitForPageLoad('networkidle'); // wait for correct page loading
   });
 
-  test.only('should navigate to specific Company', async ({
+  test('should navigate to specific visual studio Company', async ({
     page,
     homePage,
   }) => {
     await homePage.navigateToChosenByCompanies('visualstudio');
-    // await page.waitForURL('https://code.visualstudio.com/');
-    // Verify that the URL changed or that a specific category element is visible
-
-    console.log('✅✅✅', page.url());
-    // expect(page.url()).toContain('visualstudio');
-    // or check a specific title or element
-    // await expect(page.locator('h3.categoryTitle')).toHaveText('SPEAKERS');
+    console.log(`--- Working in this URL ${page.url()}`);
+    expect(page.url()).toContain('playwright.dev');
+    await expect(page.locator('[href="/community/welcome"]')).toHaveText(
+      'Community'
+    );
   });
 
-  test('should navigate to Laptops category', async ({ page, homePage }) => {
+  test('should navigate to specific bing Company', async ({
+    page,
+    homePage,
+  }) => {
     await homePage.navigateToChosenByCompanies('bing');
-    await expect(page).toHaveURL(/.*\/category\/Laptops\/.*/);
-    await expect(page.locator('h3.categoryTitle')).toHaveText('LAPTOPS');
+    console.log(`--- Working in this URL ${page.url()}`);
+    const data = await homePage.gettingLinkText();
+    console.log(`--- Obtained link text ${data}`);
+    expect(page.url()).toContain('playwright.dev');
+    await expect(page.locator('a[href="docs/trace-viewer-intro"]')).toHaveText(
+      'Trace Viewer.'
+    );
   });
 });

@@ -12,7 +12,7 @@ export class HomePage extends BasePage {
   readonly adobe: Locator;
   readonly reactNavigation: Locator;
   readonly accessibilityInsights: Locator;
-  readonly vsCodeLink: Locator;
+  readonly traceViewer: Locator;
 
   constructor(page: Page) {
     super(page); // Call the constructor of the BasePage class
@@ -25,7 +25,7 @@ export class HomePage extends BasePage {
     this.adobe = page.locator('[alt="Adobe"]');
     this.reactNavigation = page.locator('[alt="React Navigation"]');
     this.accessibilityInsights = page.locator('[alt="Accessibility Insights"]');
-    this.vsCodeLink = page.locator('button[href="/Download"]');
+    this.traceViewer = page.locator('a[href="docs/trace-viewer-intro"]');
   }
 
   async navigateToChosenByCompanies(
@@ -71,5 +71,9 @@ export class HomePage extends BasePage {
       default:
         throw new Error(`Category is not supported: ${categoryName}`);
     }
+  }
+
+  async gettingLinkText(): Promise<String> {
+    return this.getText(this.traceViewer);
   }
 }
