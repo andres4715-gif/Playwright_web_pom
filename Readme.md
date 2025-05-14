@@ -1,5 +1,6 @@
 # Playwright WEB automation Framework
 
+
 ```
 playwright-ts-framework/
 ├── tests/                  
@@ -57,3 +58,7 @@ $ npx playwright test --project=chromium --grep @ui --headed --debug
 Example: 
 $ npx playwright test --project=chromium --grep 'SHIELD-649' --headed --debug
 ```
+
+# TO DO ✅
+- [ ] Create .env file and implement it
+- [ ] inherit from Base page in the other pages

@@ -2,8 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
 
 // Load the base URL from an environment variable if available, otherwise use the default URL
-export const BASE_URL =
-  process.env.BASE_URL || 'https://www.advantageonlineshopping.com';
+export const BASE_URL = process.env.BASE_URL || 'https://playwright.dev';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
