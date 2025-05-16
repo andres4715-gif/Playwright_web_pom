@@ -4,6 +4,7 @@
     "description": "Playwright Framework and TypeScript",
     "main": "index.js",
     "scripts": {
+        "test:ui:window": "npx playwright test --ui",
         "watch:ts": "tsc --watch",
         "test": "playwright test",
         "test:ui": "playwright test --grep @ui",
