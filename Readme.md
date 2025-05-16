@@ -62,8 +62,10 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 
 # TO DO ✅
 - [ ] Create .env file and implement it
-- [ ] inherit from Base page in the other pages
 - [ ] Implement a logger
 - [ ] DTO Implementation
-- [ ] API Implementation
 - [ ] Check how implement fixtures
+- [ ] Edit the codegen script from package.json
+- [ ] On the JsonPlaceholderPage page add the baseurl coming from .env
+- [X] inherit from Base page in the other pages
+- [X] API Implementation
