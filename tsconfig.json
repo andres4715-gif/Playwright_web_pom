@@ -18,6 +18,6 @@
       //   "@utils/*": ["utils/*"]
       // }
     },
-    "include": ["src/tests/**/*.ts", "src/pages/**/*.ts", "src/fixtures/**/*.ts", "src/utils/**/*.ts", "src/playwright.config.ts"],
+    "include": ["src/tests/**/*.ts", "src/pages/**/*.ts", "src/fixtures/**/*.ts", "src/playwright.config.ts"],
     "exclude": ["node_modules", "dist"]
   }
