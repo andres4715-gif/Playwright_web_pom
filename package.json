@@ -8,6 +8,7 @@
         "test": "playwright test",
         "test:ui": "playwright test --grep @ui",
         "test:api": "npx playwright test --project=api --grep @api",
+        "test:apiTest": "npx playwright test --project=API_Tests --grep @API_Tests",
         "test:headed:ui": "playwright test --headed --grep @ui",
         "test:chrome": "playwright test --project=chromium --headed --grep @ui",
         "test:firefox": "playwright test --project=firefox --headed --grep @ui",
@@ -20,7 +21,8 @@
         "typescript",
         "testing",
         "e2e",
-        "api"
+        "api",
+        "pom"
     ],
     "author": "Andres Rios",
     "license": "ISC",
