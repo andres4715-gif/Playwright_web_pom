@@ -65,3 +65,5 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [ ] inherit from Base page in the other pages
 - [ ] Implement a logger
 - [ ] DTO Implementation
+- [ ] API Implementation
+- [ ] Check how implement fixtures
