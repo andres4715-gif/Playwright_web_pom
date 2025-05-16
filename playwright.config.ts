@@ -3,6 +3,8 @@ import path from 'path';
 
 // Load the base URL from an environment variable if available, otherwise use the default URL
 export const BASE_URL = process.env.BASE_URL || 'https://playwright.dev';
+export const BASE_URL_API_TEST =
+  process.env.BASE_URL_API_TEST || 'https://jsonplaceholder.typicode.com';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -37,6 +39,10 @@ export default defineConfig({
   /* Configure projects for major browsers */
   projects: [
     {
+      name: 'api',
+      use: {},
+    },
+    {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
@@ -59,16 +65,6 @@ export default defineConfig({
     // {
     //   name: 'Mobile Safari',
     //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Opcional: Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     // },
   ],
 
