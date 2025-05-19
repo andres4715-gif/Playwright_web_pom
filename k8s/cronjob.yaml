@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright-ui-tests
+spec:
+  schedule: '0 2 * * *' # Run daily at 2:00 AM (Cron syntax)
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: playwright-tests
+              image: my-playwright-tests:v1
+              resources:
+                requests:
+                  memory: '1Gi'
+                  cpu: '1'
+                limits:
+                  memory: '2Gi'
+                  cpu: '2'
+          restartPolicy: Never
+      backoffLimit: 1
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3

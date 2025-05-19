@@ -7,7 +7,7 @@
         "test:ui:window": "npx playwright test --ui",
         "watch:ts": "tsc --watch",
         "test": "playwright test",
-        "test:ui": "playwright test --grep @ui",
+        "test:ui": "playwright test --project=chromium --grep @ui",
         "test:api": "npx playwright test --project=api --grep @api",
         "test:apiTest": "npx playwright test --project=API_Tests --grep @API_Tests",
         "test:headed:ui": "playwright test --headed --grep @ui",
