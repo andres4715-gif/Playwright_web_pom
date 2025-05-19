@@ -30,9 +30,17 @@ jobs:
       - name: Run Playwright tests
         run: npm run test:ui
 
+      - name: Verify report directory
+        if: always()
+        run: |
+          if [ ! -d "playwright-report/" ]; then
+            echo "Directory 'playwright-report/' does not exist. Creating it...";
+            mkdir -p playwright-report;
+          fi
+
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: playwright-report
           path: playwright-report/
