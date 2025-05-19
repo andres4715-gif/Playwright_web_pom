@@ -8,4 +8,8 @@ spec:
   ports:
     - port: 80
       targetPort: 3000
+      name: http
+    - port: 9323
+      targetPort: 9323
+      name: report
   type: NodePort
