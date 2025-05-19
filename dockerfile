@@ -4,15 +4,19 @@ WORKDIR /app
 
 # Copy package files
 COPY package.json package-lock.json ./
-RUN npm install
+
+# Explicitly install the matching Playwright version
+RUN npm install && \
+    npm install @playwright/test@1.44.0 && \
+    npx playwright install
 
 # Copy only the necessary files
 COPY playwright.config.ts ./
 COPY tsconfig.json ./
 COPY src/ ./src/
 
-# This is a testing project, so we don't need to expose ports
-# EXPOSE 3000 - Not needed for test projects
+# Install http-server for serving the report
+RUN npm install -g http-server
 
-# Command to run UI tests
-CMD ["npm", "run", "test:ui"]
+# Command to run UI tests and then serve the report (in proper JSON format)
+CMD ["sh", "-c", "npm run test:ui && http-server /app/playwright-report -p 9323 --cors -a 0.0.0.0"]
