@@ -14,3 +14,10 @@ spec:
                 name: playwright-app-service
                 port:
                   number: 80
+          - path: /reports
+            pathType: Prefix
+            backend:
+              service:
+                name: playwright-app-service
+                port:
+                  number: 9323

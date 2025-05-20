@@ -28,3 +28,10 @@ spec:
                 limits:
                   memory: '2Gi'
                   cpu: '2'
+              volumeMounts:
+                - name: reports-volume
+                  mountPath: /app/playwright-report
+          volumes:
+            - name: reports-volume
+              persistentVolumeClaim:
+                claimName: playwright-reports-pvc

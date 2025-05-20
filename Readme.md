@@ -77,12 +77,13 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 # TO DO ✅
 - [ ] Create .env file and implement it
 - [ ] Implement a logger
-- [ ] DTO Implementation
 - [ ] Check how implement fixtures
 - [ ] Edit the codegen script from package.json
-- [ ] On the JsonPlaceholderPage page add the baseurl coming from .env
 - [X] inherit from Base page in the other pages
 - [X] API Implementation
 
 # TO DO KUBERNETES ✅ 
 - [X] How to run Kubernetes in the UI
+- [X] Create a .github/workflows/playwright.yml file to run with GitHub Actions
+- [X] Check why is necessary the Kubernetes file in this folder
+- [X] How can I run just using docker and docker-compose? 

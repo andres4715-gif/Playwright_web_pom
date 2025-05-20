@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  playwright:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9323:9323"
+    environment:
+      - BASE_URL=https://playwright.dev
+      - PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+    volumes:
+      - playwright-reports:/app/playwright-report
+      - ./test-results:/app/test-results
+
+volumes:
+  playwright-reports:
+
+# run whit this command line in the terminal: 
+# --------------------
+# $ docker-compose up
+# --------------------
