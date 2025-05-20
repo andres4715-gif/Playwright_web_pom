@@ -1,34 +1,48 @@
 # Playwright WEB automation Framework
 ![Screenshot 2025-05-13 at 22 27 09](https://github.com/user-attachments/assets/2bf66f8b-18b3-459d-8edb-bc1325303d6b)
 
-
+# Folder structure
 ```
-playwright-ts-framework/
-├── tests/                  
-│   ├── ui/                
-│   │   ├── login.spec.ts
-│   │   ├── registration.spec.ts
-│   │   ├── navigation.spec.ts
-│   │   └── cart.spec.ts
-│   └── api/                
-│       └── account.spec.ts
-├── pages/                  
-│   ├── BasePage.ts         
-│   ├── HomePage.ts
-│   ├── LoginPage.ts
-│   ├── RegistrationPage.ts
-│   └── ProductPage.ts      
-├── fixtures/               
-│   └── pageFixtures.ts
-├── utils/                  
-│   └── apiHelper.ts        
-├── playwright-report/      
-├── test-results/           
-├── node_modules/           
-├── .gitignore              
-├── package.json            
-├── playwright.config.ts    
-└── tsconfig.json           
+PLAYWRIGHT_WEB_POM/
+├── .github/                    # GitHub configuration (actions, workflows)
+├── dist/                       # Compiled output directory
+├── k8s/                        # Kubernetes configuration files
+│   ├── configmap.yaml
+│   ├── cronjob.yaml
+│   ├── deployment.yaml
+│   ├── ingress.yaml
+│   ├── persistentvolumeclaim.yaml
+│   └── service.yaml
+├── node_modules/               # Node.js dependencies
+├── playwright-report/          # Generated test reports
+├── src/                        # Source code directory
+│   ├── fixtures/               # Test fixtures and data
+│   │   └── pageFixtures.ts     # Page object fixtures
+│   ├── pages/                  # Page Object Models
+│   │   ├── BasePage.ts         # Base page with common methods
+│   │   └── HomePage.ts         # Home page implementation
+│   └── tests/                  # Test files
+│       ├── api/                # API tests
+│       │   ├── pages/          # API page objects
+│       │   │   ├── basePage.ts
+│       │   │   └── jsonPlaceholderPage.ts
+│       │   ├── tests/          # API test files
+│       │   └── types/          # Type definitions for API
+│       │       └── api.types.ts
+│       │   ├── basic_api_testing/   # Basic API test examples
+│       │   │   ├── jsonplaceholder_basicExample1.spec.ts
+│       │   │   └── jsonplaceholder_basicExample2.spec.ts
+│       └── ui/                 # UI tests
+│           └── navigation.spec.ts  # Navigation test file
+├── test-results/               # Test execution artifacts
+├── .gitignore                  # Git ignore file
+├── docker-compose.yml          # Docker Compose configuration
+├── Dockerfile                  # Docker configuration
+├── package-lock.json           # Node.js dependencies lock file
+├── package.json                # Project configuration and scripts
+├── playwright.config.ts        # Playwright configuration
+├── README.md                   # Project documentation
+└── tsconfig.json               # TypeScript configuration        
 ```
 
 ## How to run: 
