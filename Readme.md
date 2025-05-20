@@ -86,4 +86,5 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] How to run Kubernetes in the UI
 - [X] Create a .github/workflows/playwright.yml file to run with GitHub Actions
 - [X] Check why is necessary the Kubernetes file in this folder
-- [X] How can I run just using docker and docker-compose? 
+- [X] How can I run just using docker and docker-compose?
+- [ ] Run one the container for ui tests and another for API tests
