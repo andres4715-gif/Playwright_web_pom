@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright-ui-tests
+  labels:
+    app: playwright-ui-tests
+spec:
+  schedule: '0 2 * * *' # Run daily at 2:00 AM
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1 # Number of retries if failed
+      template:
+        metadata:
+          labels:
+            app: playwright-ui-tests
+        spec:
+          restartPolicy: Never # Do not restart if container fails
+          containers:
+            - name: playwright-tests
+              image: my-playwright-tests:v1
+              imagePullPolicy: IfNotPresent
+              resources:
+                requests:
+                  memory: '1Gi'
+                  cpu: '1'
+                limits:
+                  memory: '2Gi'
+                  cpu: '2'

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playwright-app
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: playwright-app
+  template:
+    metadata:
+      labels:
+        app: playwright-app
+    spec:
+      containers:
+        - name: playwright-app
+          image: my-playwright-app:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+          resources:
+            limits:
+              cpu: '0.5'
+              memory: '512Mi'
+            requests:
+              cpu: '0.2'
+              memory: '256Mi'

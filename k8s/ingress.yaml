@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: playwright-app-ingress
+spec:
+  rules:
+    - host: playwright-app.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: playwright-app-service
+                port:
+                  number: 80

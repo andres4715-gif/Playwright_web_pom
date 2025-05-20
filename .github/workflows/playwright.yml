@@ -1,0 +1,60 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main, master, minikube]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch: # Allows manual triggering
+
+jobs:
+  test:
+    name: Run Playwright Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Playwright Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          load: true
+          tags: playwright-tests:${{ github.sha }}
+
+      - name: Run Playwright tests in Docker
+        run: |
+          # Run the container in detached mode
+          docker run -d --name playwright-test-container playwright-tests:${{ github.sha }}
+
+          # Wait for tests to complete - look for specific output in logs
+          timeout=60
+          elapsed=0
+          until docker logs playwright-test-container 2>&1 | grep -q "Starting up http-server"; do
+            if [ $elapsed -ge $timeout ]; then
+              echo "Timeout waiting for tests to complete"
+              exit 1
+            fi
+            sleep 5
+            elapsed=$((elapsed+5))
+            echo "Waiting for tests to complete... ($elapsed seconds)"
+          done
+
+          # Get the report by copying from container
+          mkdir -p playwright-report
+          docker cp playwright-test-container:/app/playwright-report ./
+
+          # Stop the container after we've copied the report
+          docker stop playwright-test-container
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/

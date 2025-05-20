@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: playwright-app-config
+data:
+  BASE_URL: 'https://example.com'
+  API_ENDPOINT: 'https://api.example.com'

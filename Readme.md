@@ -69,3 +69,6 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [ ] On the JsonPlaceholderPage page add the baseurl coming from .env
 - [X] inherit from Base page in the other pages
 - [X] API Implementation
+
+# TO DO KUBERNETES ✅ 
+- [X] How to run Kubernetes in the UI
