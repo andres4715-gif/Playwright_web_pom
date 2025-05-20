@@ -19,6 +19,8 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
+            - containerPort: 9323
+              name: report-port
           env:
             - name: NODE_ENV
               value: production
@@ -29,3 +31,10 @@ spec:
             requests:
               cpu: '0.2'
               memory: '256Mi'
+          volumeMounts:
+            - name: reports-volume
+              mountPath: /app/playwright-report
+      volumes:
+        - name: reports-volume
+          persistentVolumeClaim:
+            claimName: playwright-reports-pvc

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: playwright-reports-pvc
+  namespace: default
+  labels:
+    app: playwright-app
+spec:
+  accessModes:
+    - ReadWriteMany # Allow multiple pods to write to this volume
+  resources:
+    requests:
+      storage: 5Gi # 5GB storage for report history
+  # If you're using a specific storage class, uncomment and specify it here
+  # storageClassName: standard

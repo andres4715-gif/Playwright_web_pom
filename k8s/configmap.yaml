@@ -5,3 +5,5 @@ metadata:
 data:
   BASE_URL: 'https://example.com'
   API_ENDPOINT: 'https://api.example.com'
+  REPORTS_PATH: '/app/playwright-report'
+  REPORTS_RETENTION_DAYS: '30'
