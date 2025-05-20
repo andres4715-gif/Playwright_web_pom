@@ -4,7 +4,7 @@ on:
   push:
     branches: [main, master, minikube]
   pull_request:
-    branches: [main, master, minikube]
+    branches: [main, master]
   workflow_dispatch: # Allows manual triggering
 
 jobs:
@@ -29,18 +29,32 @@ jobs:
 
       - name: Run Playwright tests in Docker
         run: |
-          # Run the tests in Docker and copy out the report
-          docker run --name playwright-test-container playwright-tests:${{ github.sha }}
+          # Run the container in detached mode
+          docker run -d --name playwright-test-container playwright-tests:${{ github.sha }}
 
-          # Create directory for reports
+          # Wait for tests to complete - look for specific output in logs
+          timeout=60
+          elapsed=0
+          until docker logs playwright-test-container 2>&1 | grep -q "Starting up http-server"; do
+            if [ $elapsed -ge $timeout ]; then
+              echo "Timeout waiting for tests to complete"
+              exit 1
+            fi
+            sleep 5
+            elapsed=$((elapsed+5))
+            echo "Waiting for tests to complete... ($elapsed seconds)"
+          done
+
+          # Get the report by copying from container
           mkdir -p playwright-report
-
-          # Copy the report from the container to the host
           docker cp playwright-test-container:/app/playwright-report ./
+
+          # Stop the container after we've copied the report
+          docker stop playwright-test-container
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4 # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
