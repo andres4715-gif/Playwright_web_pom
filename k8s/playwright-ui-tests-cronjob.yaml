@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright-ui-tests
+  labels:
+    app: playwright-ui-tests
+spec:
+  schedule: '0 2 * * *'
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: playwright-ui-tests
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: playwright-tests
+              image: my-playwright-tests:v1
+              imagePullPolicy: IfNotPresent
+              ports:
+                - containerPort: 9323
+                  name: report-server
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  # Run Playwright tests
+                  echo "Running tests..."
+                  npm run test:ui || TEST_FAILED=true
+
+                  # Start report server
+                  echo "Starting report server on port 9323..."
+                  npx playwright show-report --port 9323 --host 0.0.0.0 &
+
+                  # Keep pod running for 5 minutes just to see the report ASAP 
+                  echo "Report server running. Pod will stay alive for 5 minutes..."
+                  sleep 300
+
+                  # Exit with test status after sleep
+                  if [ "$TEST_FAILED" = "true" ]; then exit 1; fi
