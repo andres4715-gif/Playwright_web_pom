@@ -92,3 +92,4 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [ ] Implement namespace
 - [ ] Make some .sh files to run manual jobs
 - [ ] Install and interact whit cluster using LENS APP
+- [ ] Add in the readme file how run a manual execution

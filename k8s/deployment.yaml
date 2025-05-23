@@ -33,7 +33,7 @@ spec:
               <!DOCTYPE html>
               <html>
               <head>
-                  <title>Playwright Test Reports Dashboard</title>
+                  <title>Playwright API and UI Test Reports Dashboard</title>
                   <style>
                       body { 
                           font-family: Arial, sans-serif; 
@@ -87,7 +87,7 @@ spec:
                       <h1>Playwright Test Reports Dashboard</h1>
                       
                       <div class="schedule-info">
-                          <strong>📅 Schedule:</strong>
+                          <strong>--- Schedule:</strong>
                           <ul>
                               <li>UI Tests: Daily at 2:00 AM</li>
                               <li>API Tests: Daily at 3:00 AM</li>
@@ -96,7 +96,7 @@ spec:
                       </div>
                       
                       <div class="report-section ui-section">
-                          <h3>🖥️ UI Test Reports</h3>
+                          <h3>--- UI Test Reports</h3>
                           <p>
                               <span class="status-indicator checking" id="ui-status"></span>
                               <span id="ui-status-text">Checking availability...</span>
@@ -107,7 +107,7 @@ spec:
                       </div>
                       
                       <div class="report-section api-section">
-                          <h3>🔌 API Test Reports</h3>
+                          <h3>--- API Test Reports</h3>
                           <p>
                               <span class="status-indicator checking" id="api-status"></span>
                               <span id="api-status-text">Checking availability...</span>
