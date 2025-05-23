@@ -89,3 +89,7 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] How can I run just using docker and docker-compose?
 - [ ] Run one the container for ui tests and another for API tests
 - [ ] Upload Reports to External Storage
+- [ ] Make a bucked in AWS for testing purposes
+- [ ] Implement namespace
+- [ ] Make some .sh files to run manual jobs
+- [ ] Install and interact whit cluster using LENS APP
