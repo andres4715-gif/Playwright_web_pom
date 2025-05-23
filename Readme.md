@@ -88,3 +88,4 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] Check why is necessary the Kubernetes file in this folder
 - [X] How can I run just using docker and docker-compose?
 - [ ] Run one the container for ui tests and another for API tests
+- [ ] Upload Reports to External Storage

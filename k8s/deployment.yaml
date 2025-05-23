@@ -1,40 +1,75 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: playwright-app
+  name: playwright-dashboard
   namespace: default
 spec:
-  replicas: 2
+  replicas: 1  # Reduced to 1 since no shared storage
   selector:
     matchLabels:
-      app: playwright-app
+      app: playwright-dashboard
   template:
     metadata:
       labels:
-        app: playwright-app
+        app: playwright-dashboard
     spec:
       containers:
-        - name: playwright-app
-          image: my-playwright-app:v1
-          imagePullPolicy: IfNotPresent
+        - name: playwright-dashboard
+          image: nginx:alpine  # Simple web server for dashboard
           ports:
-            - containerPort: 3000
-            - containerPort: 9323
-              name: report-port
+            - containerPort: 80
           env:
-            - name: NODE_ENV
-              value: production
+            - name: REPORTS_SERVICE
+              value: "playwright-reports-service:9323"
           resources:
             limits:
-              cpu: '0.5'
-              memory: '512Mi'
-            requests:
               cpu: '0.2'
-              memory: '256Mi'
-          volumeMounts:
-            - name: reports-volume
-              mountPath: /app/playwright-report
-      volumes:
-        - name: reports-volume
-          persistentVolumeClaim:
-            claimName: playwright-reports-pvc
+              memory: '128Mi'
+            requests:
+              cpu: '0.1'
+              memory: '64Mi'
+          # Mount a simple HTML dashboard
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cat > /usr/share/nginx/html/index.html << 'EOF'
+              <!DOCTYPE html>
+              <html>
+              <head>
+                  <title>Playwright Test Reports</title>
+                  <style>
+                      body { font-family: Arial, sans-serif; margin: 40px; }
+                      .status { padding: 20px; border-radius: 5px; margin: 20px 0; }
+                      .running { background-color: #d4edda; }
+                      .no-tests { background-color: #f8d7da; }
+                  </style>
+              </head>
+              <body>
+                  <h1>Playwright Test Reports</h1>
+                  <div class="status">
+                      <h2>Current Test Status</h2>
+                      <p>Tests run daily at 2:00 AM</p>
+                      <p>
+                          <a href="/reports" target="_blank">View Latest Report</a>
+                          (Available if tests are currently running or completed within last 5 minutes)
+                      </p>
+                  </div>
+                  <script>
+                      // Check if reports are available
+                      fetch('/reports')
+                          .then(response => {
+                              if (response.ok) {
+                                  document.querySelector('.status').className = 'status running';
+                              } else {
+                                  document.querySelector('.status').className = 'status no-tests';
+                              }
+                          })
+                          .catch(() => {
+                              document.querySelector('.status').className = 'status no-tests';
+                          });
+                  </script>
+              </body>
+              </html>
+              EOF
+              nginx -g "daemon off;"
