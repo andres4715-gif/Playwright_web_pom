@@ -88,8 +88,8 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] Check why is necessary the Kubernetes file in this folder
 - [X] How can I run just using docker and docker-compose?
 - [X] Using Kubernetes Runs a Pod for ui tests and another Pod for API tests
+- [X] Install and interact whit cluster using LENS APP
 - [ ] Make a bucked in AWS for testing purposes and Upload Reports to External Storage
 - [ ] Implement namespace
 - [ ] Make some .sh files to run manual jobs
-- [ ] Install and interact whit cluster using LENS APP
 - [ ] Add in the readme file how run a manual execution
