@@ -4,7 +4,7 @@ metadata:
   name: playwright-dashboard
   namespace: default
 spec:
-  replicas: 1  # Reduced to 1 since no shared storage
+  replicas: 1 # Reduced to 1 since no shared storage
   selector:
     matchLabels:
       app: playwright-dashboard
@@ -15,12 +15,9 @@ spec:
     spec:
       containers:
         - name: playwright-dashboard
-          image: nginx:alpine  # Simple web server for dashboard
+          image: nginx:alpine
           ports:
             - containerPort: 80
-          env:
-            - name: REPORTS_SERVICE
-              value: "playwright-reports-service:9323"
           resources:
             limits:
               cpu: '0.2'
@@ -28,7 +25,6 @@ spec:
             requests:
               cpu: '0.1'
               memory: '64Mi'
-          # Mount a simple HTML dashboard
           command:
             - /bin/sh
             - -c
@@ -37,37 +33,140 @@ spec:
               <!DOCTYPE html>
               <html>
               <head>
-                  <title>Playwright Test Reports</title>
+                  <title>Playwright Test Reports Dashboard</title>
                   <style>
-                      body { font-family: Arial, sans-serif; margin: 40px; }
-                      .status { padding: 20px; border-radius: 5px; margin: 20px 0; }
-                      .running { background-color: #d4edda; }
-                      .no-tests { background-color: #f8d7da; }
+                      body { 
+                          font-family: Arial, sans-serif; 
+                          margin: 40px;
+                          background-color: #f5f5f5;
+                      }
+                      h1 { color: #333; }
+                      .container {
+                          background-color: white;
+                          padding: 30px;
+                          border-radius: 10px;
+                          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                          max-width: 800px;
+                          margin: 0 auto;
+                      }
+                      .report-section {
+                          margin: 20px 0;
+                          padding: 20px;
+                          border-radius: 5px;
+                          border: 1px solid #ddd;
+                      }
+                      .report-section h3 { margin-top: 0; }
+                      .ui-section { background-color: #e3f2fd; }
+                      .api-section { background-color: #f3e5f5; }
+                      .status-indicator {
+                          display: inline-block;
+                          width: 12px;
+                          height: 12px;
+                          border-radius: 50%;
+                          margin-right: 8px;
+                      }
+                      .available { background-color: #4caf50; }
+                      .unavailable { background-color: #f44336; }
+                      .checking { background-color: #ff9800; }
+                      a {
+                          color: #1976d2;
+                          text-decoration: none;
+                          font-weight: bold;
+                      }
+                      a:hover { text-decoration: underline; }
+                      .schedule-info {
+                          background-color: #fff3cd;
+                          padding: 15px;
+                          border-radius: 5px;
+                          margin-bottom: 20px;
+                      }
                   </style>
               </head>
               <body>
-                  <h1>Playwright Test Reports</h1>
-                  <div class="status">
-                      <h2>Current Test Status</h2>
-                      <p>Tests run daily at 2:00 AM</p>
-                      <p>
-                          <a href="/reports" target="_blank">View Latest Report</a>
-                          (Available if tests are currently running or completed within last 5 minutes)
+                  <div class="container">
+                      <h1>Playwright Test Reports Dashboard</h1>
+                      
+                      <div class="schedule-info">
+                          <strong>📅 Schedule:</strong>
+                          <ul>
+                              <li>UI Tests: Daily at 2:00 AM</li>
+                              <li>API Tests: Daily at 3:00 AM</li>
+                              <li>Reports available for 5 minutes after test completion</li>
+                          </ul>
+                      </div>
+                      
+                      <div class="report-section ui-section">
+                          <h3>🖥️ UI Test Reports</h3>
+                          <p>
+                              <span class="status-indicator checking" id="ui-status"></span>
+                              <span id="ui-status-text">Checking availability...</span>
+                          </p>
+                          <p>
+                              <a href="/ui-reports" target="_blank">View UI Test Reports →</a>
+                          </p>
+                      </div>
+                      
+                      <div class="report-section api-section">
+                          <h3>🔌 API Test Reports</h3>
+                          <p>
+                              <span class="status-indicator checking" id="api-status"></span>
+                              <span id="api-status-text">Checking availability...</span>
+                          </p>
+                          <p>
+                              <a href="/api-reports" target="_blank">View API Test Reports →</a>
+                          </p>
+                      </div>
+                      
+                      <p style="text-align: center; color: #666; margin-top: 30px;">
+                          Last checked: <span id="last-check">-</span>
                       </p>
                   </div>
+                  
                   <script>
-                      // Check if reports are available
-                      fetch('/reports')
-                          .then(response => {
-                              if (response.ok) {
-                                  document.querySelector('.status').className = 'status running';
-                              } else {
-                                  document.querySelector('.status').className = 'status no-tests';
-                              }
-                          })
-                          .catch(() => {
-                              document.querySelector('.status').className = 'status no-tests';
-                          });
+                      function checkReportAvailability() {
+                          // Check UI reports
+                          fetch('/ui-reports')
+                              .then(response => {
+                                  const uiStatus = document.getElementById('ui-status');
+                                  const uiText = document.getElementById('ui-status-text');
+                                  if (response.ok) {
+                                      uiStatus.className = 'status-indicator available';
+                                      uiText.textContent = 'Reports available';
+                                  } else {
+                                      uiStatus.className = 'status-indicator unavailable';
+                                      uiText.textContent = 'No active test pod';
+                                  }
+                              })
+                              .catch(() => {
+                                  document.getElementById('ui-status').className = 'status-indicator unavailable';
+                                  document.getElementById('ui-status-text').textContent = 'Service unavailable';
+                              });
+                          
+                          // Check API reports
+                          fetch('/api-reports')
+                              .then(response => {
+                                  const apiStatus = document.getElementById('api-status');
+                                  const apiText = document.getElementById('api-status-text');
+                                  if (response.ok) {
+                                      apiStatus.className = 'status-indicator available';
+                                      apiText.textContent = 'Reports available';
+                                  } else {
+                                      apiStatus.className = 'status-indicator unavailable';
+                                      apiText.textContent = 'No active test pod';
+                                  }
+                              })
+                              .catch(() => {
+                                  document.getElementById('api-status').className = 'status-indicator unavailable';
+                                  document.getElementById('api-status-text').textContent = 'Service unavailable';
+                              });
+                          
+                          // Update last check time
+                          document.getElementById('last-check').textContent = new Date().toLocaleTimeString();
+                      }
+                      
+                      // Check immediately and then every 30 seconds
+                      checkReportAvailability();
+                      setInterval(checkReportAvailability, 30000);
                   </script>
               </body>
               </html>

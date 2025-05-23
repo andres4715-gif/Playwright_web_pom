@@ -87,9 +87,8 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] Create a .github/workflows/playwright.yml file to run with GitHub Actions
 - [X] Check why is necessary the Kubernetes file in this folder
 - [X] How can I run just using docker and docker-compose?
-- [ ] Run one the container for ui tests and another for API tests
-- [ ] Upload Reports to External Storage
-- [ ] Make a bucked in AWS for testing purposes
+- [X] Using Kubernetes Runs a Pod for ui tests and another Pod for API tests
+- [ ] Make a bucked in AWS for testing purposes and Upload Reports to External Storage
 - [ ] Implement namespace
 - [ ] Make some .sh files to run manual jobs
 - [ ] Install and interact whit cluster using LENS APP
