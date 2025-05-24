@@ -90,7 +90,9 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] Using Kubernetes Runs a Pod for ui tests and another Pod for API tests
 - [X] Install and interact whit cluster using LENS APP
 - [ ] Make a bucked in AWS for testing purposes and Upload Reports to External Storage
-- [ ] Implement namespace
+- [ ] Implement namespace with configuration file in K8s/ one for UI and other to API
 - [ ] Make some .sh files to run manual jobs
 - [ ] Add in the readme file how run a manual execution
 - [ ] Improve this file: deployment.yaml in the report html section 
+- [ ] Get information about deployment process because it is not visible on Lens IDE
+- [ ] Create additional environments to move QA, Pre-prod and Prod.

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: playwright-app-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: '3600'
+    nginx.ingress.kubernetes.io/proxy-send-timeout: '3600'
+spec:
+  rules:
+    - host: playwright-app.local
+      http:
+        paths:
+          - path: /ui-reports
+            pathType: Prefix
+            backend:
+              service:
+                name: playwright-ui-reports-service # Updated!
+                port:
+                  number: 9323
+          - path: /api-reports
+            pathType: Prefix
+            backend:
+              service:
+                name: playwright-api-reports-service # Updated!
+                port:
+                  number: 9323

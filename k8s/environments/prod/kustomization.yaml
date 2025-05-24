@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: playwright-prod
+
+resources:
+  - namespace.yaml
+  - ../../base
+
+# Changed from 'patchesStrategicMerge' to 'patches'
+patches:
+  - path: patches/resource-limits.yaml
+  - path: patches/ingress-host.yaml
+
+images:
+  - name: my-playwright-tests
+    newTag: v1.0.0
+
+configMapGenerator:
+  - name: test-config
+    literals:
+      - ENVIRONMENT=prod
+      - API_BASE_URL=https://api.example.com
+      - UI_BASE_URL=https://app.example.com
+
+# Changed from 'commonLabels' to 'labels'
+labels:
+  - pairs:
+      environment: prod

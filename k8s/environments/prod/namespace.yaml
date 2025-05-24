@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: playwright-prod
+  labels:
+    environment: prod
+    app: playwright-tests
