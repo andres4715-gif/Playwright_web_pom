@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: playwright-dashboard
-  namespace: default
 spec:
   replicas: 1 # Reduced to 1 since no shared storage
   selector:
@@ -20,11 +19,11 @@ spec:
             - containerPort: 80
           resources:
             limits:
-              cpu: '0.2'
-              memory: '128Mi'
+              cpu: '500m'
+              memory: '512Mi'
             requests:
-              cpu: '0.1'
-              memory: '64Mi'
+              cpu: '100m'
+              memory: '256Mi'
           command:
             - /bin/sh
             - -c

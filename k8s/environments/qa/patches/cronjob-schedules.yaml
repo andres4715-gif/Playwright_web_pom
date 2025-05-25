@@ -3,11 +3,11 @@ kind: CronJob
 metadata:
   name: playwright-ui-tests
 spec:
-  schedule: '*/30 * * * *' # Run every 30 minutes in QA
+  schedule: '*/30 * * * *'  # Run every 30 minutes in QA
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: playwright-api-tests
 spec:
-  schedule: '*/30 * * * *' # Run every 30 minutes in QA
+  schedule: '*/30 * * * *'  # Run every 30 minutes in QA

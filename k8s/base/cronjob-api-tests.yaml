@@ -22,7 +22,7 @@ spec:
           containers:
             - name: playwright-tests
               image: my-playwright-tests:v1
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Never
               ports:
                 - containerPort: 9323
                   name: report-server
@@ -30,13 +30,59 @@ spec:
                 - /bin/sh
                 - -c
                 - |
-                  # Run Playwright API tests
+                  echo "[$(date)] Container started, checking environment..."
+                  
+                  # Debug: Check if we're in the right directory and files exist
+                  echo "[$(date)] Current directory: $(pwd)"
+                  echo "[$(date)] Contents:"
+                  ls -la
+                  
+                  # Check if package.json exists and has our scripts
+                  if [ -f "package.json" ]; then
+                    echo "[$(date)] Found package.json:"
+                    cat package.json | grep -A5 -B5 "scripts" || echo "No scripts section found"
+                  else
+                    echo "[$(date)] ERROR: No package.json found!"
+                  fi
+                  
+                  # Check if node_modules exists
+                  if [ -d "node_modules" ]; then
+                    echo "[$(date)] node_modules directory exists"
+                  else
+                    echo "[$(date)] WARNING: node_modules not found, running npm install..."
+                    npm install
+                  fi
+                  
+                  # Try to run the API tests with more verbose output
                   echo "[$(date)] Starting Playwright API tests..."
-                  npm run test:api || TEST_FAILED=true
+                  if npm run test:api; then
+                    echo "[$(date)] API tests completed successfully"
+                    TEST_FAILED=false
+                  else
+                    echo "[$(date)] API tests failed!"
+                    TEST_FAILED=true
+                  fi
+
+                  # Check if playwright-report directory was created
+                  if [ -d "playwright-report" ]; then
+                    echo "[$(date)] Found playwright-report directory:"
+                    ls -la playwright-report/
+                  else
+                    echo "[$(date)] WARNING: No playwright-report directory found"
+                  fi
 
                   # Start report server
                   echo "[$(date)] Starting report server on port 9323..."
                   npx playwright show-report --port 9323 --host 0.0.0.0 &
+                  REPORT_PID=$!
+                  
+                  # Wait a moment and check if report server started
+                  sleep 5
+                  if kill -0 $REPORT_PID 2>/dev/null; then
+                    echo "[$(date)] Report server is running (PID: $REPORT_PID)"
+                  else
+                    echo "[$(date)] WARNING: Report server may have failed to start"
+                  fi
                   
                   # Keep pod running
                   echo "[$(date)] Report server running. Pod will stay alive for 5 minutes..."
@@ -44,4 +90,9 @@ spec:
 
                   # Exit with test status
                   echo "[$(date)] Shutting down..."
-                  if [ "$TEST_FAILED" = "true" ]; then exit 1; fi
+                  if [ "$TEST_FAILED" = "true" ]; then
+                    echo "[$(date)] Exiting with failure status"
+                    exit 1
+                  else
+                    echo "[$(date)] Exiting with success status"
+                  fi

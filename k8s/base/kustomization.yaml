@@ -5,12 +5,10 @@ resources:
   - cronjob-api-tests.yaml
   - cronjob-ui-tests.yaml
   - deployment.yaml
+  - ingress.yaml
   - playwright-api-reports-service.yaml
   - playwright-ui-reports-service.yaml
   - service.yaml
-  - ingress.yaml
-
-# Changed from 'commonLabels' to 'labels'
 labels:
   - pairs:
       app.kubernetes.io/name: playwright-tests

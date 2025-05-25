@@ -4,45 +4,41 @@
 # Folder structure
 ```
 PLAYWRIGHT_WEB_POM/
-├── .github/                    # GitHub configuration (actions, workflows)
-├── dist/                       # Compiled output directory
-├── k8s/                        # Kubernetes configuration files
-│   ├── configmap.yaml
-│   ├── cronjob.yaml
-│   ├── deployment.yaml
-│   ├── ingress.yaml
-│   ├── persistentvolumeclaim.yaml
-│   └── service.yaml
-├── node_modules/               # Node.js dependencies
-├── playwright-report/          # Generated test reports
-├── src/                        # Source code directory
-│   ├── fixtures/               # Test fixtures and data
-│   │   └── pageFixtures.ts     # Page object fixtures
-│   ├── pages/                  # Page Object Models
-│   │   ├── BasePage.ts         # Base page with common methods
-│   │   └── HomePage.ts         # Home page implementation
-│   └── tests/                  # Test files
-│       ├── api/                # API tests
-│       │   ├── pages/          # API page objects
-│       │   │   ├── basePage.ts
-│       │   │   └── jsonPlaceholderPage.ts
-│       │   ├── tests/          # API test files
-│       │   └── types/          # Type definitions for API
-│       │       └── api.types.ts
-│       │   ├── basic_api_testing/   # Basic API test examples
-│       │   │   ├── jsonplaceholder_basicExample1.spec.ts
-│       │   │   └── jsonplaceholder_basicExample2.spec.ts
-│       └── ui/                 # UI tests
-│           └── navigation.spec.ts  # Navigation test file
-├── test-results/               # Test execution artifacts
-├── .gitignore                  # Git ignore file
-├── docker-compose.yml          # Docker Compose configuration
-├── Dockerfile                  # Docker configuration
-├── package-lock.json           # Node.js dependencies lock file
-├── package.json                # Project configuration and scripts
-├── playwright.config.ts        # Playwright configuration
-├── README.md                   # Project documentation
-└── tsconfig.json               # TypeScript configuration        
+📁 .github/workflows
+📁 dist
+📁 k8s
+├── 📁 base
+│   ├── 📄 cronjob-api-tests.yaml
+│   ├── 📄 cronjob-ui-tests.yaml
+│   ├── 📄 deployment.yaml
+│   ├── 📄 ingress.yaml
+│   ├── 📄 kustomization.yaml
+│   ├── 📄 playwright-api-reports-service.yaml
+│   ├── 📄 playwright-ui-reports-service.yaml
+│   └── 📄 service.yaml
+├── 📁 environments
+│   ├── 📁 pre-prod
+│   ├── 📁 prod
+│   └── 📁 qa
+├── 📁 scripts
+│   └── 📄 deploy.sh
+📄 README.md
+📁 node_modules
+📁 playwright-report
+📁 src
+├── 📁 fixtures
+├── 📁 pages
+└── 📁 tests
+📁 test-results
+📄 .gitignore
+📄 docker-compose.yml
+📄 Dockerfile
+📄 package-lock.json
+📄 package.json
+📄 playwright.config.ts
+📄 Readme.md
+📄 tsconfig.json
+    
 ```
 
 ## How to run: 
@@ -96,3 +92,8 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [ ] Improve this file: deployment.yaml in the report html section 
 - [ ] Get information about deployment process because it is not visible on Lens IDE
 - [ ] Create additional environments to move QA, Pre-prod and Prod.
+- [ ] Export the public ip to be able to see the reports in a public IP
+- [ ] Improve Deployment file adding the HTML in other file
+- [ ] Try to execute test cases using kubernetes each pull request 
+- [ ] Create environment variables and use it in cron files to execute test
+- [ ] Understand this file: deploy.sh

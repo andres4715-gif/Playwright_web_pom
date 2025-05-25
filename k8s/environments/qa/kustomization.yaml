@@ -7,23 +7,24 @@ resources:
   - namespace.yaml
   - ../../base
 
-# Changed from 'patchesStrategicMerge' to 'patches'
+# Use JSON patches instead
 patches:
-  - path: patches/cronjob-schedules.yaml
+  - target:
+      kind: CronJob
+      name: playwright-ui-tests
+    patch: |-
+      - op: replace
+        path: /spec/schedule
+        value: "*/30 * * * *"
+  - target:
+      kind: CronJob
+      name: playwright-api-tests
+    patch: |-
+      - op: replace
+        path: /spec/schedule
+        value: "*/30 * * * *"
   - path: patches/ingress-host.yaml
 
-images:
-  - name: my-playwright-tests
-    newTag: v1-qa
-
-configMapGenerator:
-  - name: test-config
-    literals:
-      - ENVIRONMENT=qa
-      - API_BASE_URL=https://api-qa.example.com
-      - UI_BASE_URL=https://app-qa.example.com
-
-# Changed from 'commonLabels' to 'labels'
 labels:
   - pairs:
       environment: qa
