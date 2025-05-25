@@ -87,12 +87,12 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] Install and interact whit cluster using LENS APP
 - [X] Create additional environments to move QA, Pre-prod and Prod.
 - [X] Make some .sh files to run manual jobs
-- [ ] Try to execute test cases using kubernetes each pull request 
 - [ ] Make a bucked in AWS for testing purposes and Upload Reports to External Storage
 - [ ] Export the public ip to be able to see the reports in a public IP
 - [ ] Improve this file: deployment.yaml in the report html section 
 - [ ] Get information about deployment process because it is not visible on Lens IDE
 - [ ] Improve Deployment file adding the HTML in other file
+- [ ] Try to execute test cases using kubernetes each pull request 
 - [ ] Add in the readme file how run a manual execution
 - [ ] Create environment variables and use it in cron files to execute test
 - [ ] Check if this Readme file k8s/Readme.md needs some changes
