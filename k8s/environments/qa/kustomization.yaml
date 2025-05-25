@@ -7,7 +7,6 @@ resources:
   - namespace.yaml
   - ../../base
 
-# Use JSON patches instead
 patches:
   - target:
       kind: CronJob

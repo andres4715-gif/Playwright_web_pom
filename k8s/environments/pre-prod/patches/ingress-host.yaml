@@ -4,7 +4,7 @@ metadata:
   name: playwright-app-ingress
 spec:
   rules:
-    - host: playwright-pre-prod.example.com # Change to your domain
+    - host: playwright-pre-prod.example.com
       http:
         paths:
           - path: /ui-reports

@@ -1,0 +1,26 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: playwright-pre-prod-developer
+  namespace: playwright-pre-prod
+rules:
+  - apiGroups: ['', 'apps', 'batch']
+    resources: ['pods', 'services', 'deployments', 'cronjobs', 'jobs']
+    verbs: ['get', 'list', 'watch', 'create', 'update', 'patch']
+  - apiGroups: ['']
+    resources: ['pods/log', 'pods/exec']
+    verbs: ['get', 'list']
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: playwright-pre-prod-developer-binding
+  namespace: playwright-pre-prod
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: playwright-pre-prod-developer
+subjects:
+  - kind: Group
+    name: pre-prod-developers
+    apiGroup: rbac.authorization.k8s.io
