@@ -7,23 +7,23 @@ resources:
   - namespace.yaml
   - ../../base
 
-# Changed from 'patchesStrategicMerge' to 'patches'
 patches:
-  - path: patches/cronjob-schedules.yaml
+  - target:
+      kind: CronJob
+      name: playwright-ui-tests
+    patch: |-
+      - op: replace
+        path: /spec/schedule
+        value: "*/30 * * * *"
+  - target:
+      kind: CronJob
+      name: playwright-api-tests
+    patch: |-
+      - op: replace
+        path: /spec/schedule
+        value: "*/30 * * * *"
   - path: patches/ingress-host.yaml
 
-images:
-  - name: my-playwright-tests
-    newTag: v1-pre-prod
-
-configMapGenerator:
-  - name: test-config
-    literals:
-      - ENVIRONMENT=pre-prod
-      - API_BASE_URL=https://api-pre-prod.example.com
-      - UI_BASE_URL=https://app-pre-prod.example.com
-
-# Changed from 'commonLabels' to 'labels'
 labels:
   - pairs:
       environment: pre-prod
