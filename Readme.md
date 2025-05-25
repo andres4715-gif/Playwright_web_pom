@@ -1,48 +1,44 @@
 # Playwright WEB automation Framework
-![Screenshot 2025-05-13 at 22 27 09](https://github.com/user-attachments/assets/2bf66f8b-18b3-459d-8edb-bc1325303d6b)
+![playwright](https://github.com/user-attachments/assets/01065d4a-6d06-46e9-85c0-fa9519702e47)
 
 # Folder structure
 ```
-PLAYWRIGHT_WEB_POM/
-├── .github/                    # GitHub configuration (actions, workflows)
-├── dist/                       # Compiled output directory
-├── k8s/                        # Kubernetes configuration files
-│   ├── configmap.yaml
-│   ├── cronjob.yaml
-│   ├── deployment.yaml
-│   ├── ingress.yaml
-│   ├── persistentvolumeclaim.yaml
-│   └── service.yaml
-├── node_modules/               # Node.js dependencies
-├── playwright-report/          # Generated test reports
-├── src/                        # Source code directory
-│   ├── fixtures/               # Test fixtures and data
-│   │   └── pageFixtures.ts     # Page object fixtures
-│   ├── pages/                  # Page Object Models
-│   │   ├── BasePage.ts         # Base page with common methods
-│   │   └── HomePage.ts         # Home page implementation
-│   └── tests/                  # Test files
-│       ├── api/                # API tests
-│       │   ├── pages/          # API page objects
-│       │   │   ├── basePage.ts
-│       │   │   └── jsonPlaceholderPage.ts
-│       │   ├── tests/          # API test files
-│       │   └── types/          # Type definitions for API
-│       │       └── api.types.ts
-│       │   ├── basic_api_testing/   # Basic API test examples
-│       │   │   ├── jsonplaceholder_basicExample1.spec.ts
-│       │   │   └── jsonplaceholder_basicExample2.spec.ts
-│       └── ui/                 # UI tests
-│           └── navigation.spec.ts  # Navigation test file
-├── test-results/               # Test execution artifacts
-├── .gitignore                  # Git ignore file
-├── docker-compose.yml          # Docker Compose configuration
-├── Dockerfile                  # Docker configuration
-├── package-lock.json           # Node.js dependencies lock file
-├── package.json                # Project configuration and scripts
-├── playwright.config.ts        # Playwright configuration
-├── README.md                   # Project documentation
-└── tsconfig.json               # TypeScript configuration        
+🗂️ PLAYWRIGHT_WEB_POM/
+📁 .github/workflows
+📁 dist
+📁 k8s
+├── 📁 base
+│   ├── 📄 cronjob-api-tests.yaml
+│   ├── 📄 cronjob-ui-tests.yaml
+│   ├── 📄 deployment.yaml
+│   ├── 📄 ingress.yaml
+│   ├── 📄 kustomization.yaml
+│   ├── 📄 playwright-api-reports-service.yaml
+│   ├── 📄 playwright-ui-reports-service.yaml
+│   └── 📄 service.yaml
+├── 📁 environments
+│   ├── 📁 pre-prod
+│   ├── 📁 prod
+│   └── 📁 qa
+├── 📁 scripts
+│   └── 📄 deploy.sh
+📄 README.md
+📁 node_modules
+📁 playwright-report
+📁 src
+├── 📁 fixtures
+├── 📁 pages
+└── 📁 tests
+📁 test-results
+📄 .gitignore
+📄 docker-compose.yml
+📄 Dockerfile
+📄 package-lock.json
+📄 package.json
+📄 playwright.config.ts
+📄 Readme.md
+📄 tsconfig.json
+    
 ```
 
 ## How to run: 
@@ -90,7 +86,25 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [X] Using Kubernetes Runs a Pod for ui tests and another Pod for API tests
 - [X] Install and interact whit cluster using LENS APP
 - [ ] Make a bucked in AWS for testing purposes and Upload Reports to External Storage
-- [ ] Implement namespace
+- [ ] Implement namespace with configuration file in K8s/ one for UI and other to API
 - [ ] Make some .sh files to run manual jobs
 - [ ] Add in the readme file how run a manual execution
 - [ ] Improve this file: deployment.yaml in the report html section 
+- [ ] Get information about deployment process because it is not visible on Lens IDE
+- [ ] Create additional environments to move QA, Pre-prod and Prod.
+- [ ] Export the public ip to be able to see the reports in a public IP
+- [ ] Improve Deployment file adding the HTML in other file
+- [ ] Try to execute test cases using kubernetes each pull request 
+- [ ] Create environment variables and use it in cron files to execute test
+- [ ] Understand this file: deploy.sh
+- [ ] Check if this Readme file k8s/Readme.md needs some changes
+
+# FIX Kubernetes config files: 
+- [ ] Check the API and UI Report is running in this port: 9323 but, if you want both in the browser is not possible for this error:
+   > E0525 14:37:00.757503   39397 portforward.go:424] "Unhandled Error" err=<
+        an error occurred forwarding 2020 -> 2020: error forwarding port 2020 to pod ef6017de569218d7be1c2f6a429413a73a848d49c281d0a718b03435c08d97dd, uid : exit status 1: 2025/05/25 19:37:00 socat[119705] E connect(5, AF=2 127.0.0.1:2020, 16): Connection refused
+
+- [ ] Check the Dashboard results in: http://localhost:8080/#
+  > 404 Not Found</title></head>
+
+

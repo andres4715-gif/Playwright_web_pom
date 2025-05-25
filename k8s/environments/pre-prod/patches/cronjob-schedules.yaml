@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright-ui-tests
+spec:
+  schedule: '0 */2 * * *' # Run every 2 hours in pre-prod
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright-api-tests
+spec:
+  schedule: '0 */2 * * *' # Run every 2 hours in pre-prod

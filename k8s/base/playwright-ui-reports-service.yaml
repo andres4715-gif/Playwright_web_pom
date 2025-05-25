@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: playwright-reports-service
+  name: playwright-ui-reports-service
 spec:
   selector:
-    app: playwright-api-tests
+    app: playwright-ui-tests
   ports:
     - port: 9323
       targetPort: 9323
