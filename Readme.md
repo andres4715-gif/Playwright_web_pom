@@ -97,3 +97,14 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [ ] Try to execute test cases using kubernetes each pull request 
 - [ ] Create environment variables and use it in cron files to execute test
 - [ ] Understand this file: deploy.sh
+- [ ] Check if this Readme file k8s/Readme.md needs some changes
+
+# FIX Kubernetes config files: 
+- [ ] Check the API and UI Report is running in this port: 9323 but, if you want both in the browser is not possible for this error:
+   > E0525 14:37:00.757503   39397 portforward.go:424] "Unhandled Error" err=<
+        an error occurred forwarding 2020 -> 2020: error forwarding port 2020 to pod ef6017de569218d7be1c2f6a429413a73a848d49c281d0a718b03435c08d97dd, uid : exit status 1: 2025/05/25 19:37:00 socat[119705] E connect(5, AF=2 127.0.0.1:2020, 16): Connection refused
+
+- [ ] Cheking the Dashboard results in: http://localhost:8080/#
+  > 404 Not Found</title></head>
+
+
