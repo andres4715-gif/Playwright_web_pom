@@ -4,7 +4,7 @@
 
 # Folder structure
 ```
-PLAYWRIGHT_WEB_POM/
+🗂️ PLAYWRIGHT_WEB_POM/
 📁 .github/workflows
 📁 dist
 📁 k8s
