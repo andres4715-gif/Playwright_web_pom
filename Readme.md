@@ -1,6 +1,5 @@
 # Playwright WEB automation Framework
-![stk8sqYZ_400x400](https://github.com/user-attachments/assets/3750dd27-a4e0-4167-b470-1974240570ce)
-
+![playwright](https://github.com/user-attachments/assets/01065d4a-6d06-46e9-85c0-fa9519702e47)
 
 # Folder structure
 ```
