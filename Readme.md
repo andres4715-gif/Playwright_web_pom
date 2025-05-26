@@ -93,6 +93,7 @@ $ npx playwright test --project=chromium --grep 'should navigate to specific vis
 - [ ] Get information about deployment process because it is not visible on Lens IDE
 - [ ] Improve Deployment file adding the HTML in other file
 - [ ] Try to execute test cases using kubernetes each pull request 
+- [ ] Edit this file k8s/scripts/run-all-tests.sh to obtain env form environment variables 
 - [ ] Add in the readme file how run a manual execution
 - [ ] Create environment variables and use it in cron files to execute test
 - [ ] Check if this Readme file k8s/Readme.md needs some changes
