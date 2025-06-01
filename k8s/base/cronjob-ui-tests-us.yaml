@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: playwright-ui-tests-us
+  labels:
+    app: playwright-ui-tests
+    region: us
+    test-type: ui
+spec:
+  schedule: '0 2 * * *'
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      parallelism: 1  # Just running a pod because no enough resources
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: playwright-ui-tests
+            region: us
+            test-type: ui
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: playwright-tests
+            image: my-playwright-app:v1
+            imagePullPolicy: Never
+            env:
+            - name: REGION
+              value: "us"
+            - name: PLAYWRIGHT_WORKERS
+              value: "4"  # Parallel workers within container
+            resources:
+              requests:
+                cpu: "1000m"
+                memory: "2Gi"
+              limits:
+                cpu: "2000m"
+                memory: "4Gi"
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "[$(date)] Starting UI tests for region: $REGION"
+              
+              # Run tests with region filter and parallel workers
+              npm run test:ui -- --grep="@$REGION" --workers=$PLAYWRIGHT_WORKERS
+              
+              # Start report server for this region
+              npx playwright show-report --port 9323 --host 0.0.0.0 &
+              
+              # Keep running for 10 minutes to allow report access
+              sleep 600
+
+
