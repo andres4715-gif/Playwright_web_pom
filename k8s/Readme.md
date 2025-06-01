@@ -1,31 +1,33 @@
-# Deployment Commands: 
+![image](https://github.com/user-attachments/assets/a86857cd-87b4-44c6-ad88-5c7c7f58002d)
 
-# Deploy: 
+# 🚀 Deployment Commands: 
+
+# 👷🏻‍♂️ Deploy: 
 ```shell
 QA: ./scripts/deploy.sh qa
 PRE-PROD: ./scripts/deploy.sh pre-prod
 PROD: ./scripts/deploy.sh prod
 ```
 
-# Check specific environment
+# 🖥️ Check specific environment
 ```shell
 $ kubectl -n <NAME_SPACE> get all
 $ kubectl -n <NAME_SPACE> get cronjobs
 $ kubectl -n <NAME_SPACE> get pods
 ```
 
-# View logs
+# 📈 View logs
 ```shell
 $ kubectl -n <NAME_SPACE> logs -l app=playwright-ui-tests
 $ kubectl -n <NAME_SPACE> logs -l app=playwright-api-tests
 ```
 
-# Port forward to access reports
+# 🛜 Port forward to access reports
 ```shell
 $ kubectl -n <NAME_SPACE> port-forward service/playwright-dashboard-service 8080:80
 ```
 
-# Best Practices
+# ☑️ Best Practices
 
 ```text
 1. Namespace Naming Convention: Use consistent naming like app-environment
@@ -52,7 +54,7 @@ $ kubectl -n <NAME_SPACE> port-forward service/playwright-dashboard-service 8080
    * Prod: Daily at scheduled times (stable monitoring)
 ```
 
-# Quick Start
+# 🚚 Quick Start
 
 ## Reorganize your files according to the directory structure
 - Apply to QA first:
@@ -62,12 +64,12 @@ $ kubectl apply -k environments/pre-prod/
 $ kubectl apply -k environments/prod/
 ```
 
-## Verify everything works:
+## ✅ Verify everything works:
 ```shell
 $ kubectl -n <NAME_SPACE> get all
 ```
 
-## Access the dashboard:
+## 💨 Access the dashboard:
 ```shell
 $ kubectl -n <NAME_SPACE> port-forward service/playwright-dashboard-service 8080:80
 ```
@@ -151,7 +153,7 @@ $ kubectl -n playwright-qa get pods -w
 
 ```
 
-🔍 Check Pod Status
+🔍 📚 Check Pod Status
 
 ```# Get all pods including the test pods
 kubectl -n playwright-qa get pods
@@ -160,3 +162,6 @@ kubectl -n playwright-qa get pods
 kubectl -n playwright-qa describe pod -l app=playwright-ui-tests
 kubectl -n playwright-qa describe pod -l app=playwright-api-tests
 ```
+
+
+👷🏻‍♂️👷🏻‍♂️🏃🏼‍♂️ Framework and k8s under constrution ⚙️🪚
