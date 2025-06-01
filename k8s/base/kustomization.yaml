@@ -2,7 +2,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - cronjob-api-tests.yaml
   - cronjob-ui-tests-europe.yaml
   - cronjob-ui-tests-india.yaml
   - cronjob-ui-tests-us.yaml

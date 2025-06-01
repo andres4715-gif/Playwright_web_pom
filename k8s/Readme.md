@@ -16,6 +16,11 @@ PRE-PROD: k8s/scripts/delete_jobs/pre-prod_delete_job.sh
 PROD: k8s/scripts/delete_jobs/prod_delete_job.sh
 ```
 
+# Apply the Kubernetes config files for [QA, PRE-PROD, PROD]"
+```shell
+$ k8s/scripts/apply_all_environmets/pre-prod_delete_job.sh
+```
+
 # 🖥️ Check specific environment
 ```shell
 $ kubectl -n <NAME_SPACE> get all
