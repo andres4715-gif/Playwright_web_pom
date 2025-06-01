@@ -1,37 +1,28 @@
 # Deployment Commands: 
 
-# Deploy to QA
+# Deploy: 
 ```shell
-$ ./scripts/deploy.sh qa
-```
-
-
-# Deploy to Pre-Prod
-```shell
-$ ./scripts/deploy.sh pre-prod
-```
-
-# Deploy to Production
-```shell
-$ ./scripts/deploy.sh prod
+QA: ./scripts/deploy.sh qa
+PRE-PROD: ./scripts/deploy.sh pre-prod
+PROD: ./scripts/deploy.sh prod
 ```
 
 # Check specific environment
 ```shell
-$ kubectl -n playwright-qa get all
-$ kubectl -n playwright-pre-prod get cronjobs
-$ kubectl -n playwright-prod get pods
+$ kubectl -n <NAME_SPACE> get all
+$ kubectl -n <NAME_SPACE> get cronjobs
+$ kubectl -n <NAME_SPACE> get pods
 ```
 
 # View logs
 ```shell
-$ kubectl -n playwright-qa logs -l app=playwright-ui-tests
-$ kubectl -n playwright-pre-prod logs -l app=playwright-api-tests
+$ kubectl -n <NAME_SPACE> logs -l app=playwright-ui-tests
+$ kubectl -n <NAME_SPACE> logs -l app=playwright-api-tests
 ```
 
 # Port forward to access reports
 ```shell
-$ kubectl -n playwright-qa port-forward service/playwright-dashboard-service 8080:80
+$ kubectl -n <NAME_SPACE> port-forward service/playwright-dashboard-service 8080:80
 ```
 
 # Best Practices
@@ -66,15 +57,106 @@ $ kubectl -n playwright-qa port-forward service/playwright-dashboard-service 808
 ## Reorganize your files according to the directory structure
 - Apply to QA first:
 ```shell
-$ bashkubectl apply -k environments/qa/
+$ kubectl apply -k environments/qa/
+$ kubectl apply -k environments/pre-prod/
+$ kubectl apply -k environments/prod/
 ```
 
 ## Verify everything works:
 ```shell
-$ bashkubectl -n playwright-qa get all
+$ kubectl -n <NAME_SPACE> get all
 ```
 
 ## Access the dashboard:
 ```shell
-$ bashkubectl -n playwright-qa port-forward service/playwright-dashboard-service 8080:80
+$ kubectl -n <NAME_SPACE> port-forward service/playwright-dashboard-service 8080:80
+```
+___
+# 💣 Minikube with Kubectl from scratch ✅
+
+## `Minikube`
+
+1️⃣ If you already have a `Minikube` cluster running, you can continue using this cluster, or you can delete it and start a new process. The command to delete the Minikube `cluster` is:
+
+```shell
+$ minikube delete
+
+Output: 
+
+🔥  Deleting "minikube" in docker ...
+🔥  Removing /Users/ariosm/.minikube/machines/minikube ...
+💀  Removed all traces of the "minikube" cluster.
+```
+
+2️⃣ Then, you should start the Minikube process using the Docker driver; for this, you can add this command line to a terminal.
+
+```shell
+# This command make a VM of Docker if this is available, 
+# and I make a local cluster of Kubernetes
+
+$ minikube start --driver=docker
+```
+
+3️⃣ Then you would need to evaluate the environment. To do this, you can add this command line to a terminal. 
+```shell
+$ eval $(minikube docker-env)
+```
+4️⃣ Docker build
+```shell
+$ docker build -t my-playwright-app:v1 .
+```
+5️⃣ Then you should apply the Kubernetes config files to be ready before executing a new job, taking into account that in this example we have three environments: QA, PRE-PROD, and PROD.  The command line to do it for the QA environment is:  
+
+```shell
+$ kubectl apply -k k8s/environments/qa
+
+
+******************
+***Other Option***
+******************
+
+NOTE: If you have a simple k8s setup you can use a regular command line like: 
+
+$ kubectl apply -f k8s/deployment.yaml
+$ kubectl apply -f k8s/service.yaml
+$ kubectl apply -f k8s/configmap.yaml
+$ kubectl apply -f k8s/ingress.yaml
+$ kubectl apply -f k8s/cronjob.yaml
+$ kubectl apply -f k8s/persistentvolumeclaim.yaml
+
+Just the simply command line, if you need to apply all of them. 
+$ kubectl apply -f k8s/
+```
+
+6️⃣ Then you should enable the addons ingress using this command line: 
+```shell
+$ minikube addons enable ingress
+```
+
+## 🚀 Manually Trigger Jobs for Testing
+Let's create jobs manually to see what's happening:
+
+```shell
+# Create a test job for UI tests
+$ kubectl -n playwright-qa create job --from=cronjob/playwright-ui-tests test-ui-manual-$(date +%s)
+
+# Create a test job for API tests
+$ kubectl -n playwright-qa create job --from=cronjob/playwright-api-tests test-api-manual-$(date +%s)
+
+NOTE: 
+The $(date +%s) adds a timestamp to make the job name unique.
+
+# Watch the pods
+$ kubectl -n playwright-qa get pods -w
+
+```
+
+🔍 Check Pod Status
+
+```# Get all pods including the test pods
+kubectl -n playwright-qa get pods
+
+# Get detailed information about the test pods
+kubectl -n playwright-qa describe pod -l app=playwright-ui-tests
+kubectl -n playwright-qa describe pod -l app=playwright-api-tests
 ```
