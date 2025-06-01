@@ -4,9 +4,16 @@
 
 # 👷🏻‍♂️ Deploy: 
 ```shell
-QA: ./scripts/deploy.sh qa
-PRE-PROD: ./scripts/deploy.sh pre-prod
-PROD: ./scripts/deploy.sh prod
+QA: k8s/scripts/run_jobs/run-qa-all-tests.sh
+PRE-PROD: k8s/scripts/run_jobs/run-pre-prod-all-tests.sh
+PROD: k8s/scripts/run_jobs/run-prod-all-tests.sh
+```
+
+# ❌ Delete jobs
+```shell
+QA: k8s/scripts/delete_jobs/qa_delete_job.sh
+PRE-PROD: k8s/scripts/delete_jobs/pre-prod_delete_job.sh
+PROD: k8s/scripts/delete_jobs/prod_delete_job.sh
 ```
 
 # 🖥️ Check specific environment
@@ -140,7 +147,20 @@ Let's create jobs manually to see what's happening:
 
 ```shell
 # Create a test job for UI tests
-$ kubectl -n playwright-qa create job --from=cronjob/playwright-ui-tests test-ui-manual-$(date +%s)
+🚚 QA ENVIRONMENT
+$ kubectl -n playwright-qa create job --from=cronjob/playwright-ui-tests-europe test-ui-manual-europe-$(date +%s)
+$ kubectl -n playwright-qa create job --from=cronjob/playwright-ui-tests-us test-ui-manual-us-$(date +%s)
+$ kubectl -n playwright-qa create job --from=cronjob/playwright-ui-tests-india test-ui-manual-india-$(date +%s)
+
+🚚 PRE-PROD ENVIRONMENT
+$ kubectl -n playwright-pre-prod create job --from=cronjob/playwright-ui-tests-europe test-ui-manual-europe-$(date +%s)
+$ kubectl -n playwright-pre-prod create job --from=cronjob/playwright-ui-tests-us test-ui-manual-us-$(date +%s)
+$ kubectl -n playwright-pre-prod create job --from=cronjob/playwright-ui-tests-india test-ui-manual-india-$(date +%s)
+
+🚚 PROD ENVIRONMENT
+$ kubectl -n playwright-prod create job --from=cronjob/playwright-ui-tests-europe test-ui-manual-europe-$(date +%s)
+$ kubectl -n playwright-prod create job --from=cronjob/playwright-ui-tests-us test-ui-manual-us-$(date +%s)
+$ kubectl -n playwright-prod create job --from=cronjob/playwright-ui-tests-india test-ui-manual-india-$(date +%s)
 
 # Create a test job for API tests
 $ kubectl -n playwright-qa create job --from=cronjob/playwright-api-tests test-api-manual-$(date +%s)
@@ -150,6 +170,7 @@ The $(date +%s) adds a timestamp to make the job name unique.
 
 # Watch the pods
 $ kubectl -n playwright-qa get pods -w
+
 
 ```
 

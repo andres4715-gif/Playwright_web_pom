@@ -1,6 +1,6 @@
 import { test, expect } from '../../fixtures/pageFixtures';
 
-test.describe.only('Companies Navigation @ui', () => {
+test.describe.only('Companies Navigation @ui @india', () => {
   test.beforeEach(async ({ homePage }) => {
     await homePage.goto('/');
     await homePage.waitForPageLoad('networkidle'); // wait for correct page loading
