@@ -21,7 +21,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: playwright-tests
-              image: my-playwright-tests:v1
+              image: my-playwright-app:v1
               imagePullPolicy: Never
               ports:
                 - containerPort: 9323
