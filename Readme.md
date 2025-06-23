@@ -41,28 +41,26 @@
     
 ```
 
-## How to run: 
+## Local Execution: 
 
 ```shell
-Execute all existing test: 
+Execute UI test: 
 $ npm run test:ui
 
-
-Execute UI Test: 
+Execute API Test: 
 $ npm run test:api
 
-
-Execute with a specific browser: 
+Execute UI test with a specific browser: 
 npm run test:chrome / npm run test:firefox / npm run test:webkit
 
 Execute UI with visible browser: 
-$ npm run test:headed
+$ npm run test:headed:ui
 
 See the latest report: 
-$ npm run npm run report
+$ npm run report
 ```
 
-## Command line to run with Debugging. 
+## Command line to run in local with Debugging. 
 ```shell
 $ npx playwright test --project=chromium --grep @ui --headed --debug
 
