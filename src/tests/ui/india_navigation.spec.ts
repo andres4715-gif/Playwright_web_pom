@@ -31,4 +31,56 @@ test.describe.only('Companies Navigation @ui @india', () => {
       'Trace Viewer.'
     );
   });
+
+    test('should navigate to specific visual studio Company_complement_2', async ({
+        page,
+        homePage,
+    }) => {
+        await homePage.navigateToChosenByCompanies('visualstudio');
+        console.log(`--- Working in this URL ${page.url()}`);
+        expect(page.url()).toContain('playwright.dev');
+        await expect(page.locator('[href="/community/welcome"]')).toHaveText(
+            'Community'
+        );
+    });
+
+    test('should navigate to specific bing Company_complement_2', async ({
+        page,
+        homePage,
+    }) => {
+        await homePage.navigateToChosenByCompanies('bing');
+        console.log(`--- Working in this URL ${page.url()}`);
+        const data = await homePage.gettingLinkText();
+        console.log(`--- Obtained link text ${data}`);
+        expect(page.url()).toContain('playwright.dev');
+        await expect(page.locator('a[href="docs/trace-viewer-intro"]')).toHaveText(
+            'Trace Viewer.'
+        );
+    });
+
+    test('should navigate to specific visual studio Company_complement_3', async ({
+        page,
+        homePage,
+    }) => {
+        await homePage.navigateToChosenByCompanies('visualstudio');
+        console.log(`--- Working in this URL ${page.url()}`);
+        expect(page.url()).toContain('playwright.dev');
+        await expect(page.locator('[href="/community/welcome"]')).toHaveText(
+            'Community'
+        );
+    });
+
+    test('should navigate to specific bing Company_complement_3', async ({
+        page,
+        homePage,
+    }) => {
+        await homePage.navigateToChosenByCompanies('bing');
+        console.log(`--- Working in this URL ${page.url()}`);
+        const data = await homePage.gettingLinkText();
+        console.log(`--- Obtained link text ${data}`);
+        expect(page.url()).toContain('playwright.dev');
+        await expect(page.locator('a[href="docs/trace-viewer-intro"]')).toHaveText(
+            'Trace Viewer.'
+        );
+    });
 });
