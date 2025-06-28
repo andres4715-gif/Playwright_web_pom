@@ -28,6 +28,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          file: Dockerfile.ci  # Especifica el Dockerfile para CI
           push: false
           load: true
           tags: playwright-tests:${{ github.sha }}
