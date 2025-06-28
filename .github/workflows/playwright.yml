@@ -1,24 +1,29 @@
-name: Playwright Tests
+name: Playwright Tests with Allure Report
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
-    branches: [main, master]
+    branches: [master]
   workflow_dispatch: # Allows manual triggering
+
+# Permisos necesarios para GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   test:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
+        
       - name: Build Playwright Docker image
         uses: docker/build-push-action@v4
         with:
@@ -26,35 +31,86 @@ jobs:
           push: false
           load: true
           tags: playwright-tests:${{ github.sha }}
-
+          
       - name: Run Playwright tests in Docker
         run: |
-          # Run the container in detached mode
-          docker run -d --name playwright-test-container playwright-tests:${{ github.sha }}
-
-          # Wait for tests to complete - look for specific output in logs
-          timeout=60
-          elapsed=0
-          until docker logs playwright-test-container 2>&1 | grep -q "Starting up http-server"; do
-            if [ $elapsed -ge $timeout ]; then
-              echo "Timeout waiting for tests to complete"
-              exit 1
-            fi
-            sleep 5
-            elapsed=$((elapsed+5))
-            echo "Waiting for tests to complete... ($elapsed seconds)"
-          done
-
-          # Get the report by copying from container
-          mkdir -p playwright-report
-          docker cp playwright-test-container:/app/playwright-report ./
-
-          # Stop the container after we've copied the report
-          docker stop playwright-test-container
-
-      - name: Upload test results
+          # Crear directorios para reportes
+          mkdir -p allure-results
+          mkdir -p allure-report
+          
+          # Ejecutar el contenedor y capturar logs
+          echo "🚀 Iniciando tests de Playwright con Allure..."
+          docker run --name playwright-test-container \
+            -v $PWD/allure-results:/app/allure-results \
+            -v $PWD/allure-report:/app/allure-report \
+            playwright-tests:${{ github.sha }} > test_output.log 2>&1
+          
+          # Obtener el código de salida
+          EXIT_CODE=$?
+          
+          # Mostrar logs completos
+          echo "📋 Logs de la ejecución:"
+          cat test_output.log
+          
+          # Copiar archivos desde el contenedor si existen
+          if docker ps -a --format "table {{.Names}}" | grep -q playwright-test-container; then
+            echo "📊 Copiando resultados de Allure..."
+            docker cp playwright-test-container:/app/allure-results ./ 2>/dev/null || echo "⚠️  No se pudieron copiar allure-results"
+            docker cp playwright-test-container:/app/allure-report ./ 2>/dev/null || echo "⚠️  No se pudo copiar allure-report"
+            docker rm playwright-test-container 2>/dev/null || true
+          fi
+          
+          # Verificar si se generaron los reportes
+          if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
+            echo "✅ Resultados de Allure generados exitosamente"
+            ls -la allure-results/
+          fi
+          
+          if [ -d "allure-report" ] && [ "$(ls -A allure-report)" ]; then
+            echo "✅ Reporte HTML de Allure generado exitosamente"
+            ls -la allure-report/
+          fi
+          
+          # Salir con el código de salida de los tests
+          exit $EXIT_CODE
+          
+      - name: Get Allure history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+          
+      - name: Allure Report action from marketplace
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+          
+      - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: allure-results-${{ github.run_number }}
+          path: allure-results/
+          retention-days: 30
+          
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ github.run_number }}
+          path: allure-report/
+          retention-days: 30
+          
+      - name: Deploy to GitHub Pages
+        if: always() && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: allure-history
+          destination_dir: .

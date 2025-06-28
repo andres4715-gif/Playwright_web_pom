@@ -1,0 +1,61 @@
+FROM mcr.microsoft.com/playwright:v1.44.0-focal
+
+WORKDIR /app
+
+# Install Java for Allure (required)
+RUN apt-get update && apt-get install -y openjdk-11-jdk wget
+
+# Install Allure commandline
+RUN wget -O allure-commandline.tgz https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.tgz && \
+    tar -zxf allure-commandline.tgz -C /opt/ && \
+    ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure && \
+    rm allure-commandline.tgz
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Explicitly install the matching Playwright version and Allure
+RUN npm install && \
+    npm install @playwright/test@1.44.0 && \
+    npm install --save-dev allure-playwright allure-commandline && \
+    npx playwright install
+
+# Copy only the necessary files
+COPY playwright.config.ts ./
+COPY tsconfig.json ./
+COPY src/ ./src/
+
+# Install http-server for serving the report (when needed)
+RUN npm install -g http-server
+
+# Create entrypoint script
+RUN echo '#!/bin/bash\n\
+    set -e\n\
+    \n\
+    # Check if we should serve the report or just run tests\n\
+    if [ "$1" = "serve" ]; then\n\
+    echo "🚀 Running tests and serving Allure report..."\n\
+    npx playwright test\n\
+    echo "📊 Generating Allure HTML report..."\n\
+    allure generate allure-results --clean -o allure-report\n\
+    echo "🌐 Starting http-server on port 9323..."\n\
+    exec http-server /app/allure-report -p 9323 --cors -a 0.0.0.0\n\
+    else\n\
+    echo "🧪 Running Playwright tests for CI..."\n\
+    # Run tests with Allure reporter\n\
+    npx playwright test\n\
+    echo "📊 Generating Allure HTML report..."\n\
+    allure generate allure-results --clean -o allure-report\n\
+    echo "✅ Tests completed!"\n\
+    \n\
+    # Check if report was generated\n\
+    if [ -d "/app/allure-report" ]; then\n\
+    echo "📋 Allure report generated at /app/allure-report"\n\
+    ls -la /app/allure-report/\n\
+    else\n\
+    echo "⚠️  No Allure report directory found"\n\
+    fi\n\
+    fi' > /app/entrypoint.sh && chmod +x /app/entrypoint.sh
+
+# Default command runs tests for CI
+CMD ["/app/entrypoint.sh"]

@@ -1,5 +1,4 @@
-import { defineConfig, devices, PlaywrightTestConfig } from '@playwright/test';
-import path from 'path';
+import { defineConfig, devices } from '@playwright/test';
 
 // Load the base URL from an environment variable if available, otherwise use the default URL
 export const BASE_URL = process.env.BASE_URL || 'https://playwright.dev';
@@ -19,8 +18,27 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined, // According machine resources
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html'], ['list']], // interactive report
+    /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+    reporter: [
+        ['list'], // Terminal output
+        [
+            'allure-playwright',
+            {
+                resultsDir: 'allure-results', // Directorio donde se guardan los resultados
+                detail: true,
+                outputFolder: 'allure-report', // Directorio del reporte final
+                suiteTitle: false, // Opcional: personalizar títulos
+            },
+        ],
+        // Mantener HTML como backup
+        [
+            'html',
+            {
+                outputFolder: 'playwright-report',
+                open: 'never',
+            },
+        ],
+    ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -65,25 +83,5 @@ export default defineConfig({
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
     },
-
-    /* Opcional: Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
   ],
-
-  /* Optional: folder for test artifacts */
-  // outputDir: 'test-results/',
-
-  /* Optional: Run a local server before test execution */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
