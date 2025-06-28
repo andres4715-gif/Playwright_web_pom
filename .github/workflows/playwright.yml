@@ -17,6 +17,9 @@ jobs:
   test:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -113,6 +116,20 @@ jobs:
       - name: Setup Pages
         if: always() && github.ref == 'refs/heads/master'
         uses: actions/configure-pages@v4
+
+      # Verificar que allure-history existe y tiene contenido
+      - name: Check allure-history
+        if: always() && github.ref == 'refs/heads/master'
+        run: |
+          if [ -d "allure-history" ] && [ "$(ls -A allure-history)" ]; then
+            echo "✅ allure-history directory exists and has content"
+            ls -la allure-history/
+          else
+            echo "❌ allure-history directory is empty or doesn't exist"
+            echo "Creating a basic index.html file"
+            mkdir -p allure-history
+            echo "<html><body><h1>Allure Report will be available after first test run</h1></body></html>" > allure-history/index.html
+          fi
 
       # Subir el directorio allure-history como artefacto de Pages
       - name: Upload Pages artifact
