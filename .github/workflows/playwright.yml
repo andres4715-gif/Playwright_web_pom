@@ -19,13 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
         
       - name: Build Playwright Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: Dockerfile.ci  # Especifica el Dockerfile para CI
@@ -76,14 +76,14 @@ jobs:
           exit $EXIT_CODE
           
       - name: Get Allure history
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         if: always()
         continue-on-error: true
         with:
           ref: gh-pages
           path: gh-pages
           
-      - name: Allure Report action from marketplace
+      - name: Generate Allure Report
         uses: simple-elf/allure-report-action@master
         if: always()
         with:
@@ -91,6 +91,7 @@ jobs:
           allure_report: allure-report
           gh_pages: gh-pages
           allure_history: allure-history
+          keep_reports: 20
           
       - name: Upload Allure results
         if: always()
@@ -107,14 +108,24 @@ jobs:
           name: allure-report-${{ github.run_number }}
           path: allure-report/
           retention-days: 30
-          
-      - name: Deploy to GitHub Pages
-        if: always() && github.ref == 'refs/heads/master' && hashFiles('allure-history/**') != ''
-        uses: peaceiris/actions-gh-pages@v3
+
+      # Configurar GitHub Pages
+      - name: Setup Pages
+        if: always() && github.ref == 'refs/heads/master'
+        uses: actions/configure-pages@v4
+
+      # Subir el directorio allure-history como artefacto de Pages
+      - name: Upload Pages artifact
+        if: always() && github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-history
-          destination_dir: .
+          path: allure-history
+
+      # Desplegar a GitHub Pages
+      - name: Deploy to GitHub Pages
+        if: always() && github.ref == 'refs/heads/master'
+        id: deployment
+        uses: actions/deploy-pages@v4
           
       - name: Add Pages URL to summary
         if: always() && github.ref == 'refs/heads/master'
