@@ -2,24 +2,33 @@ name: Playwright Tests with Allure Report
 
 on:
   push:
-    branches: [master]
+    branches: [master, main, develop] # Agregamos más ramas
   pull_request:
-    branches: [master]
-  workflow_dispatch: # Allows manual triggering
+    branches: [master, main]
+  workflow_dispatch: # Permite ejecución manual
 
 # Permisos necesarios para GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
+
+# Permite solo una ejecución concurrente de despliegue
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   test:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para obtener todo el historial
         
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -28,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: Dockerfile.ci  # Especifica el Dockerfile para CI
+          file: Dockerfile.ci
           push: false
           load: true
           tags: playwright-tests:${{ github.sha }}
@@ -65,6 +74,11 @@ jobs:
           if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
             echo "✅ Resultados de Allure generados exitosamente"
             ls -la allure-results/
+          else
+            echo "❌ No se generaron resultados de Allure"
+            echo "Creando archivo de resultados vacío para evitar errores"
+            mkdir -p allure-results
+            echo '{}' > allure-results/dummy.json
           fi
           
           if [ -d "allure-report" ] && [ "$(ls -A allure-report)" ]; then
@@ -72,8 +86,8 @@ jobs:
             ls -la allure-report/
           fi
           
-          # Salir con el código de salida de los tests
-          exit $EXIT_CODE
+          # Continuar aunque los tests fallen para generar el reporte
+          echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
           
       - name: Get Allure history
         uses: actions/checkout@v4
@@ -109,33 +123,82 @@ jobs:
           path: allure-report/
           retention-days: 30
 
-      # Verificar que allure-history existe y tiene contenido
-      - name: Check allure-history
-        if: always() && (github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch')
+      - name: Setup Pages
+        if: always()
+        uses: actions/configure-pages@v4
+        
+      - name: Check and prepare allure-history
+        if: always()
         run: |
           if [ -d "allure-history" ] && [ "$(ls -A allure-history)" ]; then
             echo "✅ allure-history directory exists and has content"
             ls -la allure-history/
           else
-            echo "❌ allure-history directory is empty or doesn't exist"
-            echo "Creating a basic index.html file"
+            echo "⚠️ allure-history directory is empty or doesn't exist"
+            echo "Creating basic structure"
             mkdir -p allure-history
-            echo "<html><body><h1>Allure Report will be available after first test run</h1></body></html>" > allure-history/index.html
+            
+            # Crear un index.html básico si no existe
+            if [ ! -f "allure-history/index.html" ]; then
+              cat > allure-history/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Allure Report - Playwright Tests</title>
+              <style>
+                  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+                  .container { max-width: 600px; margin: 0 auto; }
+                  .status { color: #1976d2; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🧪 Allure Test Report</h1>
+                  <p class="status">Report will be available after the first successful test execution.</p>
+                  <p>This page will be automatically updated with your test results.</p>
+              </div>
+          </body>
+          </html>
+          EOF
+            fi
           fi
-
-      # Desplegar a GitHub Pages usando peaceiris (más confiable que el método oficial)
-      - name: Deploy to GitHub Pages
-        if: always() && (github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch') && hashFiles('allure-history/**') != ''
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: allure-history
-          keep_files: true
           
+          # Asegurar que hay contenido para desplegar
+          echo "📁 Contenido del directorio allure-history:"
+          find allure-history -type f | head -10
+
+      - name: Upload to GitHub Pages
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-history
+          
+      - name: Deploy to GitHub Pages
+        if: always()
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
       - name: Add Pages URL to summary
-        if: always() && (github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch')
+        if: always()
         run: |
-          echo "## 📊 Allure Report" >> $GITHUB_STEP_SUMMARY
-          echo "🌐 **Report URL**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
-          echo "⏰ **Generated**: $(date)" >> $GITHUB_STEP_SUMMARY
-          echo "🌿 **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Allure Report Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Información | Detalles |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 **Report URL** | https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/ |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⏰ **Generated** | $(date -u +"%Y-%m-%d %H:%M:%S UTC") |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌿 **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏃 **Run Number** | #${{ github.run_number }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 **Test Status** | ${{ env.EXIT_CODE == '0' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [View Full Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Download Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          
+          # Fallar el job si los tests fallaron
+          if [ "${{ env.EXIT_CODE }}" != "0" ]; then
+            echo "❌ Tests failed, but report was generated successfully"
+            exit ${{ env.EXIT_CODE }}
+          fi
