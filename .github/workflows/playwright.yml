@@ -1,60 +1,204 @@
-name: Playwright Tests
+name: Playwright Tests with Allure Report
 
 on:
   push:
-    branches: [main, master]
+    branches: [master, main, develop] # Agregamos más ramas
   pull_request:
-    branches: [main, master]
-  workflow_dispatch: # Allows manual triggering
+    branches: [master, main]
+  workflow_dispatch: # Permite ejecución manual
+
+# Permisos necesarios para GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+# Permite solo una ejecución concurrente de despliegue
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   test:
     name: Run Playwright Tests
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Necesario para obtener todo el historial
+        
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
+        uses: docker/setup-buildx-action@v3
+        
       - name: Build Playwright Docker image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
+          file: Dockerfile.ci
           push: false
           load: true
           tags: playwright-tests:${{ github.sha }}
-
+          
       - name: Run Playwright tests in Docker
         run: |
-          # Run the container in detached mode
-          docker run -d --name playwright-test-container playwright-tests:${{ github.sha }}
-
-          # Wait for tests to complete - look for specific output in logs
-          timeout=60
-          elapsed=0
-          until docker logs playwright-test-container 2>&1 | grep -q "Starting up http-server"; do
-            if [ $elapsed -ge $timeout ]; then
-              echo "Timeout waiting for tests to complete"
-              exit 1
-            fi
-            sleep 5
-            elapsed=$((elapsed+5))
-            echo "Waiting for tests to complete... ($elapsed seconds)"
-          done
-
-          # Get the report by copying from container
-          mkdir -p playwright-report
-          docker cp playwright-test-container:/app/playwright-report ./
-
-          # Stop the container after we've copied the report
-          docker stop playwright-test-container
-
-      - name: Upload test results
+          # Crear directorios para reportes
+          mkdir -p allure-results
+          mkdir -p allure-report
+          
+          # Ejecutar el contenedor y capturar logs
+          echo "🚀 Iniciando tests de Playwright con Allure..."
+          docker run --name playwright-test-container \
+            -v $PWD/allure-results:/app/allure-results \
+            -v $PWD/allure-report:/app/allure-report \
+            playwright-tests:${{ github.sha }} > test_output.log 2>&1
+          
+          # Obtener el código de salida
+          EXIT_CODE=$?
+          
+          # Mostrar logs completos
+          echo "📋 Logs de la ejecución:"
+          cat test_output.log
+          
+          # Copiar archivos desde el contenedor si existen
+          if docker ps -a --format "table {{.Names}}" | grep -q playwright-test-container; then
+            echo "📊 Copiando resultados de Allure..."
+            docker cp playwright-test-container:/app/allure-results ./ 2>/dev/null || echo "⚠️  No se pudieron copiar allure-results"
+            docker cp playwright-test-container:/app/allure-report ./ 2>/dev/null || echo "⚠️  No se pudo copiar allure-report"
+            docker rm playwright-test-container 2>/dev/null || true
+          fi
+          
+          # Verificar si se generaron los reportes
+          if [ -d "allure-results" ] && [ "$(ls -A allure-results)" ]; then
+            echo "✅ Resultados de Allure generados exitosamente"
+            ls -la allure-results/
+          else
+            echo "❌ No se generaron resultados de Allure"
+            echo "Creando archivo de resultados vacío para evitar errores"
+            mkdir -p allure-results
+            echo '{}' > allure-results/dummy.json
+          fi
+          
+          if [ -d "allure-report" ] && [ "$(ls -A allure-report)" ]; then
+            echo "✅ Reporte HTML de Allure generado exitosamente"
+            ls -la allure-report/
+          fi
+          
+          # Continuar aunque los tests fallen para generar el reporte
+          echo "EXIT_CODE=$EXIT_CODE" >> $GITHUB_ENV
+          
+      - name: Get Allure history
+        uses: actions/checkout@v4
+        if: always()
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
+          
+      - name: Generate Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+          keep_reports: 20
+          
+      - name: Upload Allure results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: playwright-report/
+          name: allure-results-${{ github.run_number }}
+          path: allure-results/
+          retention-days: 30
+          
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ github.run_number }}
+          path: allure-report/
+          retention-days: 30
+
+      - name: Setup Pages
+        if: always()
+        uses: actions/configure-pages@v4
+        
+      - name: Check and prepare allure-history
+        if: always()
+        run: |
+          if [ -d "allure-history" ] && [ "$(ls -A allure-history)" ]; then
+            echo "✅ allure-history directory exists and has content"
+            ls -la allure-history/
+          else
+            echo "⚠️ allure-history directory is empty or doesn't exist"
+            echo "Creating basic structure"
+            mkdir -p allure-history
+            
+            # Crear un index.html básico si no existe
+            if [ ! -f "allure-history/index.html" ]; then
+              cat > allure-history/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Allure Report - Playwright Tests</title>
+              <style>
+                  body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+                  .container { max-width: 600px; margin: 0 auto; }
+                  .status { color: #1976d2; }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <h1>🧪 Allure Test Report</h1>
+                  <p class="status">Report will be available after the first successful test execution.</p>
+                  <p>This page will be automatically updated with your test results.</p>
+              </div>
+          </body>
+          </html>
+          EOF
+            fi
+          fi
+          
+          # Asegurar que hay contenido para desplegar
+          echo "📁 Contenido del directorio allure-history:"
+          find allure-history -type f | head -10
+
+      - name: Upload to GitHub Pages
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-history
+          
+      - name: Deploy to GitHub Pages
+        if: always()
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
+      - name: Add Pages URL to summary
+        if: always()
+        run: |
+          echo "## 📊 Allure Report Dashboard" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Información | Detalles |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌐 **Report URL** | https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/ |" >> $GITHUB_STEP_SUMMARY
+          echo "| ⏰ **Generated** | $(date -u +"%Y-%m-%d %H:%M:%S UTC") |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🌿 **Branch** | ${{ github.ref_name }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🏃 **Run Number** | #${{ github.run_number }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📊 **Test Status** | ${{ env.EXIT_CODE == '0' && '✅ Passed' || '❌ Failed' }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "- [View Full Report](https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Download Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> $GITHUB_STEP_SUMMARY
+          
+          # Fallar el job si los tests fallaron
+          if [ "${{ env.EXIT_CODE }}" != "0" ]; then
+            echo "❌ Tests failed, but report was generated successfully"
+            exit ${{ env.EXIT_CODE }}
+          fi
